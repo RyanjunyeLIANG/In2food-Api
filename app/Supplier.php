@@ -4,11 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Customer extends Model
+class Supplier extends Model
 {
-    protected $table = 'customers';
+    protected $table = 'suppliers';
 
-    protected $fillable = ['customerName'];
+    protected $fillable = ['supplierName'];
 
     public function address() {
         return $this->morphOne(Address::class, 'addressable');
@@ -18,7 +18,7 @@ class Customer extends Model
         return $this->morphMany(Contact::class, 'contactable');
     }
 
-    public function orders() {
-        return $this->hasMany('orders');
+    public function items() {
+        return $this->hasMany(Item::class);
     }
 }

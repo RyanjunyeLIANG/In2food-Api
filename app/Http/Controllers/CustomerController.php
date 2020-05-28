@@ -37,15 +37,11 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $customer = Customer::firstOrNew($request->only('customerName'));
-        $address = Address::firstOrCreate($request->only('street', 'suburb', 'state', 'postcode'));
-        $contact = Contact::firstOrCreate($request->only('firstName', 'lastName', 'phone', 'email'));
-        
-        $customer->address()->associate($address);
-        $customer->contacts()->associate($contact);
-        $customer->save();
+        $customer = Customer::firstOrCreate($request->only('customerName'));
+        $customer->address()->firstOrCreate($request->only('street', 'suburb', 'state', 'postcode'));
+        $customer->contacts()->firstOrCreate($request->only('firstName', 'lastName', 'phone', 'email'));
 
-        return $customer;
+        return $customer->load('address', 'contacts');
     }
 
     /**
@@ -88,8 +84,12 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Customer $customer)
     {
-        //
+        $customer->address()->delete();
+        $customer->contacts()->delete();
+        $customer->delete();
+
+        return 'deleted';
     }
 }

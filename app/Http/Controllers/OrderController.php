@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Contact;
+use App\Order;
+use App\Customer;
+use App\Item;
 
-class ContactController extends Controller
+class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +16,7 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return response(Contact::get()->toJson(JSON_PRETTY_PRINT), 200);
+        return Order::with('customer')->get()->toJson(JSON_PRETTY_PRINT);
     }
 
     /**
@@ -24,7 +26,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-
+        //
     }
 
     /**
@@ -35,7 +37,34 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {   
-        return Contact::create($request->all());
+        $customer = Customer::findOrFail($request->customer_id);
+        $order = Order::firstOrNew($request->only(
+            'type',
+            'status',
+            'trackingNumber',
+            'orderDate',
+            'totalPrice'
+        ));
+
+        $order->customer()->associate($customer);
+        $order->save();
+        return $order;
+    }
+
+    public function addItem(Order $order, Item $item, $quantity)
+    {   
+        $order->items()->attach($item, ['quantity' => $quantity]);
+        $order->load('items');
+
+        return $order;
+    }
+
+    public function removeItem(Order $order, Item $item)
+    {
+        $order->items()->detach($item);
+        $order->load('items');
+
+        return $order;
     }
 
     /**
@@ -44,9 +73,9 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Contact $contact)
+    public function show($id)
     {
-        return $contact;
+        //
     }
 
     /**
@@ -67,10 +96,9 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Contact $contact)
+    public function update(Request $request, Order $order)
     {
-        $contact->update($request->all());
-        return $contact;
+        //
     }
 
     /**
@@ -79,10 +107,10 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contact $contact)
+    public function destroy(Order $order)
     {
-        $contact->delete();
+        $order->delete();
 
-        return 'Deleted';
+        return 'deleted.';
     }
 }

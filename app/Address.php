@@ -8,7 +8,7 @@ class Address extends Model
 {
     protected $table = 'address';
 
-    protected $fillable = ['street', 'suburb', 'state', 'postcode', 'addressable_type'];
+    protected $fillable = ['street', 'suburb', 'state', 'postcode'];
 
     public function addressable() {
         return $this->morphTo();

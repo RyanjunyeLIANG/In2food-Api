@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Contact;
+use App\Supplier;
 
-class ContactController extends Controller
+class SupplierController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return response(Contact::get()->toJson(JSON_PRETTY_PRINT), 200);
+        return Supplier::with(['address', 'contacts'])->get()->toJson(JSON_PRETTY_PRINT);
     }
 
     /**
@@ -24,7 +24,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-
+        //
     }
 
     /**
@@ -34,8 +34,12 @@ class ContactController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
-        return Contact::create($request->all());
+    {
+        $supplier = Supplier::firstOrCreate($request->only('supplierName'));
+        $supplier->address()->firstOrCreate($request->only('street', 'suburb', 'state', 'postcode'));
+        $supplier->contacts()->firstOrCreate($request->only('firstName', 'lastName', 'phone', 'email'));
+
+        return $supplier->load('address', 'contacts');
     }
 
     /**
@@ -44,9 +48,9 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Contact $contact)
+    public function show($id)
     {
-        return $contact;
+        //
     }
 
     /**
@@ -67,10 +71,9 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Contact $contact)
+    public function update(Request $request, $id)
     {
-        $contact->update($request->all());
-        return $contact;
+        //
     }
 
     /**
@@ -79,10 +82,12 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contact $contact)
+    public function destroy(Supplier $supplier)
     {
-        $contact->delete();
+        $supplier->address()->delete();
+        $supplier->contacts()->delete();
+        $supplier->delete();
 
-        return 'Deleted';
+        return 'deleted';
     }
 }

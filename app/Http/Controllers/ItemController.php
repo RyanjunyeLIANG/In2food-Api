@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Contact;
+use App\Item;
+use App\Supplier;
 
-class ContactController extends Controller
+class ItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +15,7 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return response(Contact::get()->toJson(JSON_PRETTY_PRINT), 200);
+        return Item::with('supplier')->get()->toJson(JSON_PRETTY_PRINT);
     }
 
     /**
@@ -24,7 +25,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-
+        //
     }
 
     /**
@@ -34,8 +35,17 @@ class ContactController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
-        return Contact::create($request->all());
+    {
+        $supplier = Supplier::findOrFail($request->supplier_id);
+        $item = Item::firstOrNew([
+            'itemName' => $request->itemName,
+            'category' => $request->category,
+            'description' => $request->description,
+            'unitPrice' => $request->unitPrice,
+        ]);
+        $item->supplier()->associate($supplier);
+        $item->save();
+        return $item;
     }
 
     /**
@@ -44,9 +54,9 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Contact $contact)
+    public function show($id)
     {
-        return $contact;
+        //
     }
 
     /**
@@ -67,10 +77,9 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Contact $contact)
+    public function update(Request $request, $id)
     {
-        $contact->update($request->all());
-        return $contact;
+        //
     }
 
     /**
@@ -79,10 +88,10 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contact $contact)
+    public function destroy(Item $item)
     {
-        $contact->delete();
+        $item->delete();
 
-        return 'Deleted';
+        return 'deleted';
     }
 }

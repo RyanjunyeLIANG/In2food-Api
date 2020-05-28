@@ -48,6 +48,7 @@ class WarehouseController extends Controller
     }
 
     public function destroy(Warehouse $warehouse) {
+        $warehouse->address()->delete();
         $warehouse->delete();
 
         return 'deleted';

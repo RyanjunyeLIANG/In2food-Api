@@ -18,13 +18,25 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware('auth:api')->get('login', 'Auth\AuthController@index');
+
 Route::group([''], function(){
     Route::resource('warehouses', 'WarehouseController');
     Route::resource('address', 'AddressController'); 
     Route::resource('contacts', 'ContactController');
     Route::resource('customers', 'CustomerController');
+    Route::resource('suppliers', 'SupplierController');
+    Route::resource('items', 'ItemController');
+    Route::resource('orders', 'OrderController');
+
+
+    Route::post('register', 'Auth\AuthController@register');
+    Route::post('login', 'Auth\AuthController@login');
+    Route::post('logout', 'Auth\AuthController@logout');
 
     Route::put('warehouses/{warehouse}/address/{address}', 'WarehouseController@addAddress');
+    Route::post('orders/{order}/items/{item}/{quantity}', 'OrderController@addItem');
+    Route::delete('orders/{order}/items/{item}', 'OrderController@removeItem');
 });
 
 // Route::get('warehouses', 'WarehouseController@index');
