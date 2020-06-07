@@ -101,6 +101,7 @@ class OrderController extends Controller
         $order->update($request->all());
         $customer = Customer::findOrFail($request->customer_id);
         $order->customer()->associate($customer);
+        $order->save();
         $order->load('customer');
         return $order;
     }
