@@ -14,8 +14,8 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index(Request $request)
+    {   
         return Order::with('customer')->get()->toJson(JSON_PRETTY_PRINT);
     }
 
@@ -73,9 +73,9 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Order $order)
     {
-        //
+         return Order::with('customer')->findOrFail($order->id)->toJson(JSON_PRETTY_PRINT);  
     }
 
     /**
@@ -98,7 +98,9 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-        //
+        $order->update($request->all());
+        $order->load('customer');
+        return $order;
     }
 
     /**

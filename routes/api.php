@@ -29,6 +29,8 @@ Route::group([''], function(){
     Route::resource('items', 'ItemController');
     Route::resource('orders', 'OrderController');
 
+    Route::get('customers-list', 'CustomerController@listid');
+    Route::get('suppliers-list', 'SupplierController@listid');
 
     Route::post('register', 'Auth\AuthController@register');
     Route::post('login', 'Auth\AuthController@login');

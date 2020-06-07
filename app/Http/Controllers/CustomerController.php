@@ -56,6 +56,17 @@ class CustomerController extends Controller
     }
 
     /**
+     * Display the id and name.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function listid()
+    {
+        return Customer::all(['id', 'customerName'])->toJson(JSON_PRETTY_PRINT);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
