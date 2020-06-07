@@ -99,6 +99,8 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $order->update($request->all());
+        $customer = Customer::findOrFail($request->customer_id);
+        $order->customer()->associate($customer);
         $order->load('customer');
         return $order;
     }
