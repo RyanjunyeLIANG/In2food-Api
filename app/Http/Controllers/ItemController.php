@@ -80,6 +80,9 @@ class ItemController extends Controller
     public function update(Request $request, Item $item)
     {
         $item->update($request->all());
+        $supplier = Supplier::findOrFail($request->supplier_id);
+        $item->supplier()->associate($supplier);
+        $item->save();
         $item->load('supplier');
         return $item;
     }
